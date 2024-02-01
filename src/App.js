@@ -12,17 +12,34 @@ function App() {
     const addDataToBlockchain = async () => {
       if (ipfsCID) {
         try {
-          console.log(id, ipfsCID)
           // add data to blockchain
-          await addFormDataToBlockchain(id, ipfsCID);
+          await addFormDataToBlockchain(ipfsCID, id);
+
+          // retrieve ipfs cid from blockchain after adding
+          const ethResponseIpfsCID = await retrieveCIDFromBlockchain(id);
+          setRetrievedIpfsCID(ethResponseIpfsCID);
         } catch (error) {
           console.error('Error adding data to blockchain:', error);
         }
       }
     };
-
     addDataToBlockchain();
   }, [ipfsCID, id]);
+
+  useEffect(() => {
+    const retrieveIPFSData = async () => {
+      if (retrievedIpfsCID) {
+        try {
+          // Retrieve data from ipfs
+          const retrievedData = await retrieveDataFromIPFS(retrievedIpfsCID);
+          setRetrievedData(retrievedData);
+        } catch (error) {
+          console.error('Error retrieving data from IPFS:', error);
+        }
+      }
+    };
+    retrieveIPFSData();
+  }, [retrievedIpfsCID]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -32,13 +49,7 @@ function App() {
       const responseIpfsCID = await addDataToIPFS(name);
       setIpfsCID(responseIpfsCID);
 
-      // retrieve ipfs cid from blockchain
-      const ethResponseIpfsCID = await retrieveCIDFromBlockchain(id);
-      setRetrievedIpfsCID(ethResponseIpfsCID);
 
-      // retrieve data from ipfs
-      const retrievedData = await retrieveDataFromIPFS(ethResponseIpfsCID);
-      setRetrievedData(retrievedData);
     } catch (error) {
       console.log('Error: ', error);
     }
