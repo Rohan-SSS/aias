@@ -1,82 +1,70 @@
-import React, { useState } from 'react';
-import { testFormContract } from './ethereumSetup';
+import React, { useEffect, useState } from "react";
+import { addDataToIPFS, addFormDataToBlockchain, retrieveCIDFromBlockchain, retrieveDataFromIPFS } from './IPFSinteractions';
 
-const App = () => {
-  const [name, setName] = useState('');
-  const [id, setId] = useState('');
-  const [formDataContract, setFormDataContract] = useState(null);
-  const [searchResult, setSearchResult] = useState('');
+function App() {
+  const [id, setId] = useState();
+  const [name, setName] = useState();
+  const [ipfsCID, setIpfsCID] = useState();
+  const [retrievedIpfsCID, setRetrievedIpfsCID] = useState();
+  const [retrievedData, setRetrievedData] = useState();
 
-  const connectToBlockchain = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.enable();
-        setFormDataContract(testFormContract);
-      } catch (error) {
-        console.error('Error connecting to blockchain', error);
+  useEffect(() => {
+    const addDataToBlockchain = async () => {
+      if (ipfsCID) {
+        try {
+          console.log(id, ipfsCID)
+          // add data to blockchain
+          await addFormDataToBlockchain(id, ipfsCID);
+        } catch (error) {
+          console.error('Error adding data to blockchain:', error);
+        }
       }
-    } else {
-      console.error('MetaMask not detected!');
-    }
-  };
+    };
 
-  const handleNameChange = (e) => setName(e.target.value);
-  const handleIdChange = (e) => setId(e.target.value);
+    addDataToBlockchain();
+  }, [ipfsCID, id]);
 
-  const handleSubmit = async () => {
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      if (window.ethereum && window.ethereum.enable) {
-        const accounts = await window.ethereum.enable();
-        const selectedAddress = accounts[0];
+      // add data to ipfs
+      const responseIpfsCID = await addDataToIPFS(name);
+      setIpfsCID(responseIpfsCID);
 
-        const idNumber = parseInt(id, 10);
+      // retrieve ipfs cid from blockchain
+      const ethResponseIpfsCID = await retrieveCIDFromBlockchain(id);
+      setRetrievedIpfsCID(ethResponseIpfsCID);
 
-        await formDataContract.methods.addFormData(name, idNumber).send({ from: selectedAddress, gas: 600000 });
-
-        setName('');
-        setId('');
-      } else {
-        console.error('MetaMask not detected or does not support the enable method.');
-      }
+      // retrieve data from ipfs
+      const retrievedData = await retrieveDataFromIPFS(ethResponseIpfsCID);
+      setRetrievedData(retrievedData);
     } catch (error) {
-      console.error('Error submitting form data', error);
+      console.log('Error: ', error);
     }
   };
 
-  const handleSearch = async () => {
-    try {
-      const idNumber = parseInt(id, 10);
-
-      // Call the existing getFormData function to get the name by ID
-      const result = await formDataContract.methods.getFormData(idNumber).call();
-
-      setSearchResult(result);
-    } catch (error) {
-      console.error('Error fetching data from contract', error);
-    }
-  };
   return (
     <div>
-      <h1>Form Data App</h1>
-      <button onClick={connectToBlockchain}>Connect to Blockchain</button>
-      {formDataContract && (
-        <div>
-          <label>Name:</label>
-          <input type="text" value={name} onChange={handleNameChange} />
-          <br />
-          <label>ID:</label>
-          <input type="number" value={id} onChange={handleIdChange} />
-          <br />
-          <button onClick={handleSubmit}>Submit Form</button>
-          <br />
-          <button onClick={handleSearch}>Search by ID</button>
-          <div>
-            <strong>Search Result:</strong> {searchResult}
-          </div>
-        </div>
-      )}
+      <h1>React App</h1>
+      <form onSubmit={handleFormSubmit}>
+        <label>
+          ID:
+          <input type="number" value={id} onChange={(e) => setId(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          Name:
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        </label>
+        <br />
+        <button type="submit">Submit</button>
+      </form>
+      <p>IPFS CID: {ipfsCID}</p>
+      <p>Retrieved IPFS CID: {retrievedIpfsCID}</p>
+      <p>Retrieved Data from IPFS: {retrievedData}</p>
     </div>
   );
-};
+}
 
 export default App;

@@ -1,27 +1,27 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.0;
 
-contract testForm {
+contract TestForm {
     struct FormData {
-        string name;
         uint256 id;
+        string ipfsCID;
     }
 
     mapping(uint256 => FormData) formDataMap;
     uint256 public formDataCount;
 
-    event FormSubmitted(string name, uint256 id);
+    event FormSubmitted(uint256 id, string ipfsCID);
 
-    function addFormData(string memory _name, uint256 _id) external {
+    function addFormData(uint256 _id, string memory _ipfsCID) external {
         FormData storage formData = formDataMap[_id];
-        formData.name = _name;
         formData.id = _id;
+        formData.ipfsCID = _ipfsCID;
         formDataCount++;
 
-        emit FormSubmitted(_name, _id);
+        emit FormSubmitted(_id, _ipfsCID);
     }
 
     function getFormData(uint256 _id) external view returns (string memory) {
-        return formDataMap[_id].name;
+        return formDataMap[_id].ipfsCID;
     }
 }

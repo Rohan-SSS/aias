@@ -10,15 +10,15 @@ let testFormContractABI = [
     "inputs": [
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "id",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "ipfsCID",
+        "type": "string"
       }
     ],
     "name": "FormSubmitted",
@@ -41,14 +41,14 @@ let testFormContractABI = [
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
-      },
-      {
         "internalType": "uint256",
         "name": "_id",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_ipfsCID",
+        "type": "string"
       }
     ],
     "name": "addFormData",
