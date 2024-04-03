@@ -74,7 +74,7 @@ contract aadhaarContract{
     emit aadhaarRegistered(_aadhaarId, _IpfsCID);
   }
 
-  function getAadhaar(uint256 _aadhaarId)external view returns (string memory){
+  function getAadhaar(uint256 _aadhaarId) external view returns (string memory){
     return aadhaarDataMap[_aadhaarId].IpfsCID;
   }
 }
