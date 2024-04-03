@@ -38,5 +38,8 @@ async function retrieveDataFromIPFS(cid) {
   return content;
 }
 
-export { addDataToIPFS, addFormDataToBlockchain, retrieveCIDFromBlockchain, retrieveDataFromIPFS };
+export { addDataToIPFS, 
+  addFormDataToBlockchain,
+  retrieveCIDFromBlockchain,
+  retrieveDataFromIPFS };
 
