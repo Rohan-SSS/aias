@@ -152,7 +152,7 @@ let testIPFSContractABI = [
   }
 ]
 
-let aadhaarContractAddress = '0xFF7374D46af353D661c30a5ab36cA42116Ad8b36';
+let aadhaarContractAddress = '0xb954f75D7cD7a312B17f2ddfefA8fd442e92bC4d';
 let aadhaarContractABI = [
   {
     "inputs": [],
@@ -291,7 +291,33 @@ let aadhaarContractABI = [
         "type": "address"
       }
     ],
+    "name": "ownerAddRegistrar",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
     "name": "removeRegistrar",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
+    "name": "ownerRemoveRegistrar",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -310,6 +336,24 @@ let aadhaarContractABI = [
       }
     ],
     "name": "registerAadhaar",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_aadhaarId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_IpfsCID",
+        "type": "string"
+      }
+    ],
+    "name": "ownerRegisterAadhaar",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

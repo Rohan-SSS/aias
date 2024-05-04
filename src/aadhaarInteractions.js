@@ -9,10 +9,16 @@ async function addAadhaarIDToBlockchain(ipfsCID, id){
     const accounts = await web3.eth.getAccounts()
     await aadhaarContract.methods.registerAadhaar(id, ipfsCID).send({ from: accounts[0], gas: 600000})
 }
+// add id and CID to blockchain by owner
+async function addAadhaarIDToBlockchainOwner(ipfsCID, id){
+    const accounts = await web3.eth.getAccounts()
+    await aadhaarContract.methods.ownerRegisterAadhaar(id, ipfsCID).send({ from: accounts[0], gas: 600000})
+}
 
 // retrieve cid from blockchain
 async function retrieveAadhaarCIDFromBLockchain(id){
     const result = await aadhaarContract.methods.getAadhaar(id).call();
+    console.log("Result from blockchain:", result); // Add this log statement
     return result;
 }
 
@@ -37,4 +43,4 @@ async function retrieveAadhaarDataFromIPFS(cid){
     return content;
 }
 
-export { addAadhaarIDToBlockchain, retrieveAadhaarCIDFromBLockchain, addAadhaarDataToIPFS, retrieveAadhaarDataFromIPFS };
+export { addAadhaarIDToBlockchain, addAadhaarIDToBlockchainOwner, retrieveAadhaarCIDFromBLockchain, addAadhaarDataToIPFS, retrieveAadhaarDataFromIPFS };

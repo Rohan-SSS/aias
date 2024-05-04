@@ -30,6 +30,7 @@ contract aadhaarContract{
   // Constructor
   constructor() {
     roles[msg.sender] = Role.Owner;
+    owner = msg.sender;
   }
 
 
@@ -42,6 +43,7 @@ contract aadhaarContract{
   // Functions
 
   // Access Control
+  // Add/Remove Supervisors
   function addSupervisor(address _account) external onlyOwner() {
     roles[_account] = Role.Supervisor;
     emit RoleAdded(_account, Role.Supervisor);
@@ -53,27 +55,54 @@ contract aadhaarContract{
     emit RoleRemoved(_account, Role.Supervisor);
   }
 
+  // Add Aadhaar registrar
   function addRegistrar(address _account) external onlyRole(Role.Supervisor) {
-    roles[_account] = Role.aadhaarRegistrar;
-    emit RoleAdded(_account, Role.aadhaarRegistrar);
+      _addRegistrar(_account);
   }
 
+  function ownerAddRegistrar(address _account) external onlyOwner() {
+      _addRegistrar(_account);
+  }
+
+  function _addRegistrar(address _account) private {
+      roles[_account] = Role.aadhaarRegistrar;
+      emit RoleAdded(_account, Role.aadhaarRegistrar);
+  }
+
+  // Remove Aadhaar registrar
   function removeRegistrar(address _account) external onlyRole(Role.Supervisor) {
-    require(_account != owner, "Cannot remove owner role");
-    roles[_account] = Role.User;
-    emit RoleRemoved(_account, Role.aadhaarRegistrar);
+      _removeRegistrar(_account);
   }
 
-  // Aadhaar
-  function registerAadhaar( uint256 _aadhaarId, string memory _IpfsCID) external onlyRole(Role.aadhaarRegistrar){
-    require(aadhaarDataMap[_aadhaarId].aadhaarId == 0, "Aadhaar ID already exists");
-    aadhaarData storage data = aadhaarDataMap[_aadhaarId];
-    data.aadhaarId = _aadhaarId;
-    data.IpfsCID = _IpfsCID ;
-    aadhaarCount++;
-    emit aadhaarRegistered(_aadhaarId, _IpfsCID);
+  function ownerRemoveRegistrar(address _account) external onlyOwner() {
+      _removeRegistrar(_account);
   }
 
+  function _removeRegistrar(address _account) private {
+      require(_account != owner, "Cannot remove owner role");
+      roles[_account] = Role.User;
+      emit RoleRemoved(_account, Role.aadhaarRegistrar);
+  }
+
+  // Add Aadhaar Id to blockchain
+  function registerAadhaar(uint256 _aadhaarId, string memory _IpfsCID) external onlyRole(Role.aadhaarRegistrar) {
+      _registerAadhaar(_aadhaarId, _IpfsCID);
+  }
+
+  function ownerRegisterAadhaar(uint256 _aadhaarId, string memory _IpfsCID) external onlyOwner() {
+      _registerAadhaar(_aadhaarId, _IpfsCID);
+  }
+
+  function _registerAadhaar(uint256 _aadhaarId, string memory _IpfsCID) private {
+      require(aadhaarDataMap[_aadhaarId].aadhaarId == 0, "Aadhaar ID already exists");
+      aadhaarData storage data = aadhaarDataMap[_aadhaarId];
+      data.aadhaarId = _aadhaarId;
+      data.IpfsCID = _IpfsCID;
+      aadhaarCount++;
+      emit aadhaarRegistered(_aadhaarId, _IpfsCID);
+  }
+
+  // Get Aadhaar record
   function getAadhaar(uint256 _aadhaarId) external view returns (string memory){
     return aadhaarDataMap[_aadhaarId].IpfsCID;
   }
